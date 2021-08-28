@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignIn(){
     const commonStore = useSelector(state => state.CommonStore)
+    const userStore = useSelector(state => state.UserStore)
     const dispatch = useDispatch()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -67,7 +68,7 @@ export default function SignIn(){
                 setShowPasswordError(false)
                 setErrorPasswordText('')
                 setShowUnauthError(false)
-                dispatch(setIsLoginFlag(true))
+                dispatch(setIsLoginFlag(!userStore.isLoginFlag))
                 localStorage.setItem('token', response.data.token)
             }else{
                 if(response.message === "Unauthorized user"){
@@ -120,13 +121,13 @@ export default function SignIn(){
                         <Card.Text className={classes.cardText}>
                             <form autoComplete="off">
                                 <div className={classes.flex}>
-                                    <TextField error={showEmailError ? true : false}
+                                    <TextField error={showEmailError}
                                                helperText={errorEmailText.length !== 0 ? errorEmailText : ''}
                                                id="email"
                                                label="Email"
                                                value={email}
                                                onChange={handleEmailChange} />
-                                    <TextField  error={showPasswordError ? true : false}
+                                    <TextField  error={showPasswordError}
                                                 helperText={errorPasswordText.length !== 0 ? errorPasswordText : ''}
                                                 id="password"
                                                 label="Пароль"

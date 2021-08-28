@@ -6,7 +6,7 @@ const UserStore = createSlice({
         HTTP_STATUS_OK: 200,
         HTTP_STATUS_CREATE: 201,
         user:null,
-        isLoginFlag:true
+        isLoginFlag:false
     },
     reducers:{
         setUser:(state, action) => {

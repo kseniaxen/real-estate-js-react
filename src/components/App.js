@@ -39,7 +39,7 @@ function App() {
                 if (response) {
                     if (response.status === 'success') {
                         if(response.data){
-                            dispatch(setUser(new UserModel(response.data.id, response.data.name, response.data.email, response.data.role_name)))
+                            dispatch(setUser(new UserModel(response.data.id, response.data.name, response.data.email, response.data.role_name, response.data.created_at)))
                         }else {
                             dispatch(setIsLoginFlag(false))
                         }

@@ -8,6 +8,7 @@ import TypeReducer from "../stores/TypeStore"
 import TypePropertyReducer from "../stores/TypePropertyStore"
 import CurrencyReducer from "../stores/CurrencyStore"
 import UnitReducer from "../stores/UnitStore"
+import PaginationReducer from "../stores/PaginationStore"
 
 export default configureStore({
         reducer: {
@@ -19,7 +20,8 @@ export default configureStore({
             TypeStore:TypeReducer,
             TypePropertyStore:TypePropertyReducer,
             CurrencyStore:CurrencyReducer,
-            UnitStore:UnitReducer
+            UnitStore:UnitReducer,
+            PaginationStore:PaginationReducer
         },middleware:(getDefaultMiddleware) => getDefaultMiddleware ({
             serializableCheck:false
         })

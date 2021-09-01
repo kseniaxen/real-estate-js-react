@@ -15,7 +15,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import {makeStyles} from "@material-ui/core/styles";
 import {useDispatch, useSelector} from "react-redux";
 import {clearError, setError, setLoading} from "../../stores/CommonStore";
-import {setApartments, setCountApartments, setIsLoginFlag} from "../../stores/UserStore";
+import {setApartments, setCountApartments, setCountHouses, setHouses, setIsLoginFlag} from "../../stores/UserStore";
 import AddIcon from "@material-ui/icons/Add";
 import ApartmentIcon from '@material-ui/icons/Apartment';
 import HomeIcon from '@material-ui/icons/Home';
@@ -165,6 +165,8 @@ export default function User(){
     useEffect(() => {
         if(alignment === 'apartments'){
             fetchUserCountApartments()
+        }else{
+            fetchUserCountHouses()
         }
     },[alignment])
 
@@ -175,7 +177,20 @@ export default function User(){
     },[userStore.countApartments])
 
     useEffect(() => {
-        fetchUserApartments()
+        dispatch(setCountPages(userStore.countHouses))
+        dispatch(setStartPage(paginationStore.page))
+        dispatch(setEndPage(userStore.countHouses))
+        if(userStore.houses.length === 0){
+            fetchUserHouses()
+        }
+    },[userStore.countHouses])
+
+    useEffect(() => {
+        if(alignment === 'apartments'){
+            fetchUserApartments()
+        }else{
+            fetchUserHouses()
+        }
     },[paginationStore.page])
 
     const fetchUserCountApartments = () => {
@@ -202,10 +217,34 @@ export default function User(){
         dispatch(setLoading(false))
     }
 
+    const fetchUserCountHouses = () => {
+        dispatch(clearError())
+        dispatch(setLoading(true))
+        fetch(`${commonStore.basename}/houseuser/count`,{
+            method: 'GET',
+            headers:{
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            }
+        }).then((response) => {
+            return response.json()
+        }).then((response) => {
+            if(response.status === 'success'){
+                dispatch(setCountHouses(response.data))
+            }else if(response.status === 'failure'){
+                dispatch(setError(response.error))
+            }
+        }).catch((error) => {
+            dispatch(setLoading(false))
+            dispatch(setError(error.message))
+            throw error
+        })
+        dispatch(setLoading(false))
+    }
+
     const fetchUserApartments = () => {
         dispatch(clearError())
         dispatch(setLoading(true))
-        fetch(`${commonStore.basename}/apartmentuser`,{
+        fetch(`${commonStore.basename}/apartmentuser/get`,{
             method: 'POST',
             headers:{
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -227,10 +266,41 @@ export default function User(){
         dispatch(setLoading(false))
     }
 
+    const fetchUserHouses = () => {
+        dispatch(clearError())
+        dispatch(setLoading(true))
+        fetch(`${commonStore.basename}/houseuser/get`,{
+            method: 'POST',
+            headers:{
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({'start': paginationStore.startPage, 'end':paginationStore.endPage})
+        }).then((response) => {
+            return response.json()
+        }).then((response) => {
+            if(response.status === 'success'){
+                dispatch(setHouses(response.data))
+            }
+        }).catch((error) => {
+            dispatch(setLoading(false))
+            dispatch(setError(error.message))
+            throw error
+        })
+        dispatch(setLoading(false))
+    }
+
     const handleChangePage = (event, value) => {
-        dispatch(setPage(value))
-        dispatch(setStartPage(value))
-        dispatch(setEndPage(userStore.countApartments))
+        if(alignment === 'apartments'){
+            dispatch(setPage(value))
+            dispatch(setStartPage(value))
+            dispatch(setEndPage(userStore.countApartments))
+        }else{
+            dispatch(setPage(value))
+            dispatch(setStartPage(value))
+            dispatch(setEndPage(userStore.countHouses))
+        }
     };
 
     useEffect(() => {
@@ -384,6 +454,80 @@ export default function User(){
                             :
                             <div>
                                 <Grid container spacing={2}>
+                                    {
+                                        userStore.houses.map((house) => {
+                                            return (
+                                                <Grid item lg={6} md={6} xs={12}>
+                                                    <Card>
+                                                        <CardHeader
+                                                            title={house.title}
+                                                            subheader={parseDate(house.created_at)}/>
+                                                        <CardMedia
+                                                            className={classes.media}
+                                                            image={house.image}
+                                                            title="house"
+                                                        />
+                                                        <CardContent>
+                                                            <Typography variant="body1" color="textSecondary" component="p">
+                                                                {house.country[0].name}, {house.city[0].name}
+                                                            </Typography>
+                                                            <Typography variant="h4" color="primary">{house.price} {house.currency[0].name}</Typography>
+                                                            <Typography variant="body1" color="textPrimary" component="p">
+                                                                {house.description}
+                                                            </Typography>
+                                                            <Typography variant="body1">
+                                                                Комнат - {house.rooms} &#8226; {house.area} м<sup>2</sup> &#8226; {house.land_area} {house.unit[0].name}
+                                                            </Typography>
+                                                        </CardContent>
+                                                        <CardActions disableSpacing>
+                                                            <IconButton
+                                                                className={clsx(classes.expand, {
+                                                                    [classes.expandOpen]: expanded[house.id],
+                                                                })}
+                                                                onClick={()=>handleExpandClick(house.id)}
+                                                                aria-expanded={expanded}
+                                                                aria-label="show more"
+                                                            >
+                                                                <ExpandMoreIcon />
+                                                            </IconButton>
+                                                        </CardActions>
+                                                        <Collapse in={expanded[house.id]} timeout="auto" unmountOnExit>
+                                                            <CardContent>
+                                                                <Typography paragraph>
+                                                                    Комнат - {house.rooms} &#8226; {house.floors} этаж
+                                                                </Typography>
+                                                                <Typography paragraph>
+                                                                    Площадь {house.area} м<sup>2</sup> { (house.residential_area ?` - ${house.residential_area} м<sup>2</sup>`: "") } { (house.kitchen_area ?` - ${house.kitchen_area} м<sup>2</sup>`: "") }
+                                                                </Typography>
+                                                                <Typography paragraph>
+                                                                    {house.land_area} {house.unit[0].name}
+                                                                </Typography>
+                                                                <Typography paragraph color="textSecondary">
+                                                                    Описание
+                                                                </Typography>
+                                                                <Typography paragraph style={{wordWrap:"break-word"}}>
+                                                                    {house.description}
+                                                                </Typography>
+                                                                <Paper className={classes.paper} style={{backgroundColor:'lightgrey'}}>
+                                                                    <Typography paragraph variant="h6" gutterBottom>
+                                                                        Связаться с {house.name}
+                                                                    </Typography>
+                                                                    <Typography variant="h6">
+                                                                        <a style={{textDecoration:'none'}} href={"tel:"+ house.phone}>
+                                                                            {house.phone}
+                                                                        </a>
+                                                                    </Typography>
+                                                                </Paper>
+                                                            </CardContent>
+                                                        </Collapse>
+                                                    </Card>
+                                                </Grid>
+                                            )
+                                        })
+                                    }
+                                </Grid>
+                                <Grid container justify="center" alignItems="center">
+                                    <Pagination count={paginationStore.countPages} page={paginationStore.page} onChange={handleChangePage} />
                                 </Grid>
                             </div>
                     }

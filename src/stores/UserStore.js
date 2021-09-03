@@ -5,6 +5,7 @@ const UserStore = createSlice({
     initialState:{
         HTTP_STATUS_OK: 200,
         HTTP_STATUS_CREATE: 201,
+        HTTP_STATUS_NO_CONTENT:204,
         user:null,
         isLoginFlag:false,
         apartments:[],

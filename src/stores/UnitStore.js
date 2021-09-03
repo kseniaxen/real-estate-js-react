@@ -6,14 +6,18 @@ const UnitStore = createSlice({
         HTTP_STATUS_OK:200,
         HTTP_STATUS_CREATED:201,
         HTTP_STATUS_NO_CONTENT:204,
-        units:[]
+        units:[],
+        selectUnit:null
     },
     reducers:{
         setUnits:(state, action) => {
             state.units = action.payload
+        },
+        setSelectUnit:(state, action) => {
+            state.selectUnit = action.payload
         }
     }
 })
 
-export const {setUnits} = UnitStore.actions
+export const {setUnits, setSelectUnit} = UnitStore.actions
 export default UnitStore.reducer

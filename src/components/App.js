@@ -12,6 +12,11 @@ import UserModel from "../models/UserModel";
 import {setAdminRoutes, setAnonymousRoutes, setLoggedRoutes} from "../stores/RouterStore";
 import {createTheme, ThemeProvider} from "@material-ui/core/styles";
 import blue from "@material-ui/core/colors/blue";
+import {setCountries} from "../stores/CountryStore";
+import {setTypes} from "../stores/TypeStore";
+import {setTypeProperties} from "../stores/TypePropertyStore";
+import {setCurrencies} from "../stores/CurrencyStore";
+import {setUnits} from "../stores/UnitStore";
 
 const theme = createTheme({
     palette: {
@@ -102,6 +107,139 @@ function App() {
             }
         })
     }, [history])
+
+    const fetchCountries = () => {
+        dispatch(clearError())
+        dispatch(setLoading(true))
+        fetch(`${commonStore.basename}/country`,{
+            method: 'GET'
+        }).then((response) => {
+            return response.json()
+        }).then(responseModel => {
+            if(responseModel){
+                if (responseModel.status === 'success') {
+                    dispatch(setCountries(JSON.parse(
+                        decodeURIComponent(
+                            JSON.stringify(responseModel.data)
+                                .replace(/(%2E)/ig, "%20")
+                        )
+                    )))
+                }
+            }
+        }).catch((error) => {
+            dispatch(setError(error.message))
+            throw error
+        })
+        dispatch(setLoading(false))
+    }
+
+    const fetchTypes = () => {
+        dispatch(clearError())
+        dispatch(setLoading(true))
+        fetch(`${commonStore.basename}/type`,{
+            method: 'GET'
+        }).then((response) => {
+            return response.json()
+        }).then(responseModel => {
+            if(responseModel){
+                if (responseModel.status === 'success') {
+                    dispatch(setTypes(JSON.parse(
+                        decodeURIComponent(
+                            JSON.stringify(responseModel.data)
+                                .replace(/(%2E)/ig, "%20")
+                        )
+                    )))
+                }
+            }
+        }).catch((error) => {
+            dispatch(setError(error.message))
+            throw error
+        })
+        dispatch(setLoading(false))
+    }
+
+    const fetchTypeProperties = () => {
+        dispatch(clearError())
+        dispatch(setLoading(true))
+        fetch(`${commonStore.basename}/typeproperty`,{
+            method: 'GET'
+        }).then((response) => {
+            return response.json()
+        }).then(responseModel => {
+            if(responseModel){
+                if (responseModel.status === 'success') {
+                    dispatch(setTypeProperties(JSON.parse(
+                        decodeURIComponent(
+                            JSON.stringify(responseModel.data)
+                                .replace(/(%2E)/ig, "%20")
+                        )
+                    )))
+                }
+            }
+        }).catch((error) => {
+            dispatch(setError(error.message))
+            throw error
+        })
+        dispatch(setLoading(false))
+    }
+
+    const fetchCurrencies = () => {
+        dispatch(clearError())
+        dispatch(setLoading(true))
+        fetch(`${commonStore.basename}/currency`,{
+            method: 'GET'
+        }).then((response) => {
+            return response.json()
+        }).then(responseModel => {
+            if(responseModel){
+                if (responseModel.status === 'success') {
+                    dispatch(setCurrencies(JSON.parse(
+                        decodeURIComponent(
+                            JSON.stringify(responseModel.data)
+                                .replace(/(%2E)/ig, "%20")
+                        )
+                    )))
+                }
+            }
+        }).catch((error) => {
+            dispatch(setError(error.message))
+            throw error
+        })
+        dispatch(setLoading(false))
+    }
+
+    const fetchUnits = () => {
+        dispatch(clearError())
+        dispatch(setLoading(true))
+        fetch(`${commonStore.basename}/unit`,{
+            method: 'GET'
+        }).then((response) => {
+            return response.json()
+        }).then(responseModel => {
+            if(responseModel){
+                if (responseModel.status === 'success') {
+                    dispatch(setUnits(JSON.parse(
+                        decodeURIComponent(
+                            JSON.stringify(responseModel.data)
+                                .replace(/(%2E)/ig, "%20")
+                        )
+                    )))
+                }
+            }
+        }).catch((error) => {
+            dispatch(setError(error.message))
+            throw error
+        })
+        dispatch(setLoading(false))
+    }
+
+    useEffect(() => {
+        fetchCountries()
+        fetchTypes()
+        fetchTypeProperties()
+        fetchCurrencies()
+        fetchUnits()
+    },[])
 
     return (
         <ThemeProvider theme={theme}>

@@ -4,6 +4,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {Button, Grid, TextField} from "@material-ui/core";
 import {Card} from "react-bootstrap";
 import {clearError, setError} from "../../stores/CommonStore";
+import history from "../../history";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -73,6 +74,7 @@ export default function SignUp(){
                 setErrorEmailText('')
                 setShowPasswordError(false)
                 setErrorPasswordText('')
+                history.replace('/signin')
             }else{
                 if(response.data){
                     if(response.data.name){

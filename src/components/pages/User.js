@@ -117,7 +117,6 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function User() {
-    const START_PAGE = 1, END_PAGE=1000
     const commonStore = useSelector(state => state.CommonStore)
     const userStore = useSelector(state => state.UserStore)
     const [name, setName] = useState('')
@@ -127,7 +126,6 @@ export default function User() {
     const [showEmailError, setShowEmailError] = useState(false)
     const [errorEmailText, setErrorEmailText] = useState('')
 
-    const [openAccordionApart, setOpenAccordionApart] = useState(false);
     const [expanded, setExpanded] = useState({});
 
     const [openSidePanel, setOpenSidePanel] = useState(false)
@@ -873,7 +871,7 @@ export default function User() {
                                                                 из {apart.floors}
                                                             </Typography>
                                                             <Typography paragraph>
-                                                                Площадь {apart.area} {(apart.residential_area ? ` - ${apart.residential_area}` : "")} {(apart.kitchen_area ? ` - ${apart.kitchen_area}` : "")}
+                                                                Площадь {apart.area} {(apart.residential_area ? ` - ${apart.residential_area}` : "")} {(apart.kitchen_area ? ` - ${apart.kitchen_area}` : "")} м<sup>2</sup>
                                                             </Typography>
                                                             <Typography paragraph color="textSecondary">
                                                                 Описание
@@ -1264,6 +1262,7 @@ export default function User() {
                                             type='number'
                                             onChange={handlePhoneChange}
                                             required
+                                            inputProps={{'min': 1}}
                                         />
                                     </FormControl>
                                     <FormControl>
@@ -1563,6 +1562,7 @@ export default function User() {
                                             label={'Телефон'}
                                             value={adPhone}
                                             type='number'
+                                            inputProps={{'min': 1}}
                                             onChange={handlePhoneChange}
                                             required
                                         />

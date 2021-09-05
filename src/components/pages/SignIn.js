@@ -5,6 +5,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {Button, Grid, TextField, Typography} from "@material-ui/core";
 import {clearError, setError} from "../../stores/CommonStore";
 import {setIsLoginFlag} from "../../stores/UserStore";
+import history from "../../history";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -70,6 +71,7 @@ export default function SignIn(){
                 setShowUnauthError(false)
                 dispatch(setIsLoginFlag(!userStore.isLoginFlag))
                 localStorage.setItem('token', response.data.token)
+                history.replace('/')
             }else{
                 if(response.message === "Unauthorized user"){
                     setShowUnauthError(true)

@@ -71,7 +71,6 @@ function App() {
             } else {
                 dispatch(setLoggedRoutes())
             }
-            history.replace('/')
         }else{
             dispatch(setAnonymousRoutes())
         }

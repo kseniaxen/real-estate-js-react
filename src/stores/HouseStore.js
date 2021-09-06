@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 import history from "../history";
 
-const ApartmentStore = createSlice({
-    name:'ApartmentStore',
+const HouseStore = createSlice({
+    name:'HouseStore',
     initialState:{
         HTTP_STATUS_OK:200,
-        apartments:[],
+        houses:[],
         count:null,
         start:1,
         end:4,
@@ -13,21 +13,22 @@ const ApartmentStore = createSlice({
         countryFilter:null,
         cityFilter:null,
         currencyFilter:null,
+        unitFilter:null,
         roomsFilter:null,
-        floorFrom:null,
-        floorTo:null,
         floorsTo:null,
         floorsFrom:null,
         areaTo:null,
         areaFrom:null,
+        landAreaTo:null,
+        landAreaFrom:null,
         priceTo:null,
         priceFrom:null
     },
     reducers:{
-        setApartments:(state, action) => {
-            state.apartments = action.payload
+        setHouses:(state, action) => {
+            state.houses = action.payload
         },
-        setCountApartment:(state, action) => {
+        setCountHouse:(state, action) => {
             state.count = action.payload
         },
         setStart:(state, action) => {
@@ -48,14 +49,11 @@ const ApartmentStore = createSlice({
         setCurrencyFilter:(state, action) => {
             state.currencyFilter = action.payload
         },
+        setUnitFilter:(state, action) => {
+            state.unitFilter = action.payload
+        },
         setRoomsFilter:(state, action) => {
             state.roomsFilter = action.payload
-        },
-        setFloorFromFilter:(state, action) => {
-            state.floorFrom = action.payload
-        },
-        setFloorToFilter:(state, action) => {
-            state.floorTo = action.payload
         },
         setFloorsFromFilter:(state, action) => {
             state.floorsFrom = action.payload
@@ -69,6 +67,12 @@ const ApartmentStore = createSlice({
         setAreaFromFilter:(state, action) => {
             state.areaFrom = action.payload
         },
+        setLandAreaToFilter:(state, action) => {
+            state.landAreaTo = action.payload
+        },
+        setLandAreaFromFilter:(state, action) => {
+            state.landAreaFrom = action.payload
+        },
         setPriceFromFilter:(state, action) => {
             state.priceFrom = action.payload
         },
@@ -77,18 +81,19 @@ const ApartmentStore = createSlice({
         },
         historyPush:(state) => {
             history.push({
-                pathname: '/apartment',
+                pathname: '/house',
                 search: `?${(state.typeFilter) ? 'typeId=' + state.typeFilter + '&' : ''}
                       ${(state.countryFilter) ? 'countryId=' + state.countryFilter + '&': ''}
                       ${(state.cityFilter) ? 'cityId=' + state.cityFilter + '&': ''}
                       ${(state.currencyFilter) ? 'currencyId=' + state.currencyFilter + '&': ''}
+                      ${(state.unitFilter) ? 'unitId=' + state.unitFilter + '&': ''}
                       ${(state.roomsFilter) ? 'rooms=' + state.roomsFilter + '&': ''}
-                      ${(state.floorFrom) ? 'floorFrom=' + state.floorFrom + '&': ''}
-                      ${(state.floorTo) ? 'floorTo=' + state.floorTo + '&': ''}
                       ${(state.floorsTo) ? 'floorsTo=' + state.floorsTo + '&': ''}
                       ${(state.floorsFrom) ? 'floorsFrom=' + state.floorsFrom + '&': ''}
                       ${(state.areaFrom) ? 'areaFrom=' + state.areaFrom + '&': ''}
                       ${(state.areaTo) ? 'areaTo=' + state.areaTo + '&': ''}
+                      ${(state.landAreaFrom) ? 'landFrom=' + state.landAreaFrom + '&': ''}
+                      ${(state.landAreaTo) ? 'landTo=' + state.landAreaTo + '&': ''}
                       ${(state.priceFrom) ? 'priceFrom=' + state.priceFrom + '&': ''}
                       ${(state.priceTo) ? 'priceTo=' + state.priceTo + '&': ''}
                       `
@@ -98,8 +103,8 @@ const ApartmentStore = createSlice({
     }
 })
 
-export const {setApartments,
-    setCountApartment,
+export const {setHouses,
+    setCountHouse,
     setStart,
     setEnd,
     setTypeFilter,
@@ -107,13 +112,14 @@ export const {setApartments,
     setCityFilter,
     setCurrencyFilter,
     setRoomsFilter,
-    setFloorToFilter,
-    setFloorFromFilter,
     setFloorsToFilter,
     setFloorsFromFilter,
     setAreaFromFilter,
     setAreaToFilter,
+    setLandAreaFromFilter,
+    setLandAreaToFilter,
     setPriceFromFilter,
     setPriceToFilter,
-    historyPush} = ApartmentStore.actions
-export default ApartmentStore.reducer
+    setUnitFilter,
+    historyPush} = HouseStore.actions
+export default HouseStore.reducer

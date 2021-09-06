@@ -9,6 +9,7 @@ import TypePropertyReducer from "../stores/TypePropertyStore"
 import CurrencyReducer from "../stores/CurrencyStore"
 import UnitReducer from "../stores/UnitStore"
 import ApartmentReducer from "../stores/ApartmentStore"
+import HouseReducer from "../stores/HouseStore"
 
 export default configureStore({
         reducer: {
@@ -21,7 +22,8 @@ export default configureStore({
             TypePropertyStore:TypePropertyReducer,
             CurrencyStore:CurrencyReducer,
             UnitStore:UnitReducer,
-            ApartmentStore:ApartmentReducer
+            ApartmentStore:ApartmentReducer,
+            HouseStore:HouseReducer
         },middleware:(getDefaultMiddleware) => getDefaultMiddleware ({
             serializableCheck:false
         })

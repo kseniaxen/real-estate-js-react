@@ -145,9 +145,10 @@ export default function Home(){
                                             <AccessTimeIcon className={classes.icon}/>
                                             <h6 className={classes.h6}>{parseDate(apartment.created_at)}</h6>
                                         </div>
-                                        <Card.Img variant="top"
+                                        <Card.Img
+                                                  variant="top"
                                                   src={apartment.image}
-                                                  style={{cursor: 'pointer'}}
+                                                  style={{cursor: 'pointer', maxHeight:'200px'}}
                                                   onClick={ () => {
                                                       setOpenImage(true)
                                                       setImage(apartment.image)
@@ -188,7 +189,7 @@ export default function Home(){
                                         </div>
                                         <Card.Img variant="top"
                                                   src={house.image}
-                                                  style={{cursor: 'pointer'}}
+                                                  style={{cursor: 'pointer', maxHeight:'200px'}}
                                                   onClick={ () => {
                                                           setOpenImage(true)
                                                           setImage(house.image)

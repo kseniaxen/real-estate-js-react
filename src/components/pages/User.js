@@ -25,7 +25,7 @@ import {
     Paper,
     Radio,
     RadioGroup,
-    Select,
+    Select, Snackbar,
     TextField,
     Typography
 } from "@material-ui/core";
@@ -44,6 +44,7 @@ import {setSelectCurrency} from "../../stores/CurrencyStore";
 import {setSelectUnit} from "../../stores/UnitStore";
 import {Send} from "@material-ui/icons";
 import Resizer from "react-image-file-resizer";
+import {Alert} from "@material-ui/lab";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -151,6 +152,10 @@ export default function User() {
     const typePropertyStore = useSelector(state => state.TypePropertyStore)
     const currencyStore = useSelector(state => state.CurrencyStore)
     const unitStore = useSelector(state => state.UnitStore)
+
+    const [snackBarVisibility, setSnackBarVisibility] = useState(false)
+    const [snackBarText, setSnackBarText] = useState('')
+    const [snackBarSeverity, setSnackBarSeverity] = useState('success')
 
     const dispatch = useDispatch()
     const classes = useStyles();
@@ -365,7 +370,16 @@ export default function User() {
             }).then((response) => {
                 if (response.status === userStore.HTTP_STATUS_NO_CONTENT) {
                     setCurrentAdId({})
-                    fetchUserApartments()
+                    setSnackBarText('Ваше объявление успешно удалено!')
+                    setSnackBarSeverity('info')
+                    setSnackBarVisibility(true)
+                    setTimeout(()=>{
+                        fetchUserApartments()
+                    }, 3000)
+                }else{
+                    setSnackBarText('Упс.. Что-то пошло не так')
+                    setSnackBarSeverity('error')
+                    setSnackBarVisibility(true)
                 }
             }).catch((error) => {
                 dispatch(setError(error.message))
@@ -383,7 +397,16 @@ export default function User() {
             }).then((response) => {
                 if (response.status === userStore.HTTP_STATUS_NO_CONTENT) {
                     setCurrentAdId({})
-                    fetchUserHouses()
+                    setSnackBarText('Ваше объявление успешно удалено!')
+                    setSnackBarSeverity('info')
+                    setSnackBarVisibility(true)
+                    setTimeout(()=>{
+                        fetchUserHouses()
+                    }, 3000)
+                }else{
+                    setSnackBarText('Упс.. Что-то пошло не так')
+                    setSnackBarSeverity('error')
+                    setSnackBarVisibility(true)
                 }
             }).catch((error) => {
                 dispatch(setError(error.message))
@@ -582,7 +605,12 @@ export default function User() {
         }).then(responseModel => {
             if(responseModel){
                 if (responseModel.status === 'success') {
-                    fetchUserApartments()
+                    setSnackBarText('Новое объявление успешно создано!')
+                    setSnackBarSeverity('success')
+                    setSnackBarVisibility(true)
+                    setTimeout(()=>{
+                        fetchUserApartments()
+                    }, 3000)
                 }else{
                     setOpenModal(true)
                 }
@@ -629,7 +657,12 @@ export default function User() {
         }).then(responseModel => {
             if(responseModel){
                 if (responseModel.status === 'success') {
-                    fetchUserApartments()
+                    setSnackBarText('Ваше объявление успешно изменено!')
+                    setSnackBarSeverity('success')
+                    setSnackBarVisibility(true)
+                    setTimeout(() => {
+                        fetchUserApartments()
+                    }, 3000)
                 }else{
                     setOpenModal(true)
                 }
@@ -677,7 +710,12 @@ export default function User() {
         }).then(responseModel => {
             if(responseModel){
                 if (responseModel.status === 'success') {
-                    fetchUserHouses()
+                    setSnackBarText('Новое объявление успешно создано!')
+                    setSnackBarSeverity('success')
+                    setSnackBarVisibility(true)
+                    setTimeout(()=>{
+                        fetchUserHouses()
+                    }, 3000)
                 }else{
                     setOpenModal(true)
                 }
@@ -725,7 +763,12 @@ export default function User() {
         }).then(responseModel => {
             if(responseModel){
                 if (responseModel.status === 'success') {
-                    fetchUserHouses()
+                    setSnackBarText('Ваше объявление успешно изменено!')
+                    setSnackBarSeverity('success')
+                    setSnackBarVisibility(true)
+                    setTimeout(()=>{
+                        fetchUserHouses()
+                    }, 3000)
                 }else{
                     setOpenModal(true)
                 }
@@ -750,6 +793,14 @@ export default function User() {
 
     const handleChangeRadioType = (e) => {
         dispatch(setSelectTypeProperty(e.target.value))
+    }
+
+    const handleSnackBarClose = (e, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackBarVisibility(false)
+        setSnackBarSeverity('success')
     }
 
     return(
@@ -1622,6 +1673,13 @@ export default function User() {
                     </div>
                 </Fade>
             </Modal>
+            <Snackbar
+                open={snackBarVisibility}
+                autoHideDuration={3000} onClose={handleSnackBarClose}>
+                <Alert onClose={handleSnackBarClose} severity={snackBarSeverity}>
+                    {snackBarText}
+                </Alert>
+            </Snackbar>
         </div>
     )
 }

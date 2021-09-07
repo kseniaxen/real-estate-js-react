@@ -878,7 +878,7 @@ export default function Houses(){
                         onClick={() => {
                             handleSearch()
                             setOpenSidePanel(false)
-                        }
+                            }
                         }>
                     Поиск
                 </Button>

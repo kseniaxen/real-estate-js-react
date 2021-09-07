@@ -5,6 +5,7 @@ import {Button, Grid, TextField} from "@material-ui/core";
 import {Card} from "react-bootstrap";
 import {clearError, setError} from "../../stores/CommonStore";
 import history from "../../history";
+import ModalSignUp from "../common/ModalSignUp";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -39,6 +40,7 @@ export default function SignUp(){
     const [errorEmailText, setErrorEmailText] = useState('')
     const [showPasswordError, setShowPasswordError] = useState(false)
     const [errorPasswordText, setErrorPasswordText] = useState('')
+    const [modalShow, setModalShow] = useState(false);
 
     const classes = useStyles();
 
@@ -74,7 +76,7 @@ export default function SignUp(){
                 setErrorEmailText('')
                 setShowPasswordError(false)
                 setErrorPasswordText('')
-                history.replace('/signin')
+                setModalShow(true)
             }else{
                 if(response.data){
                     if(response.data.name){
@@ -156,6 +158,11 @@ export default function SignUp(){
                     </Card.Body>
                 </Card>
             </Grid>
+            <ModalSignUp
+                show={modalShow}
+                onHide={() => {setModalShow(false)
+                    history.replace('/signin')}}
+            />
         </Grid>
     )
 }

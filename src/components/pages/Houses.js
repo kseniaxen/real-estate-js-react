@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {clearError, setError, setLoading} from "../../stores/CommonStore";
 import {setCities} from "../../stores/CityStore";
 import {
-    Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress,
+    Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, Drawer, Fab,
     FormControl,
     FormControlLabel,
     FormLabel,
@@ -37,8 +37,9 @@ import {
     setTypeFilter,
     setUnitFilter
 } from "../../stores/HouseStore";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import SearchIcon from "@material-ui/icons/Search";
+import Lightbox from "react-image-lightbox";
 
 const useStyles = makeStyles((theme)=>({
     root: {
@@ -52,11 +53,61 @@ const useStyles = makeStyles((theme)=>({
     formControl: {
         margin: theme.spacing(1),
         minWidth: 200,
+        [theme.breakpoints.down("md")]: {
+            minWidth: 200
+        },
+        [theme.breakpoints.down("sm")]: {
+            minWidth: 100
+        }
     },
     media: {
         height: 0,
-        paddingTop: '56.25%', // 16:9
+        paddingTop: '50%', // 16:9
     },
+    h6:{
+        marginLeft:'5px',
+        color:'grey',
+        fontWeight:'normal'
+    },
+    icon:{
+        color:'grey',
+        width:'20px',
+        height:'20px',
+    },
+    loader:{
+        position: "fixed",
+        top: "50%",
+        left: "60%",
+        [theme.breakpoints.down("xs")]: {
+            position: "fixed",
+            top: "50%",
+            left: "45%"
+        }
+    },
+    fab:{
+        display:'none',
+        [theme.breakpoints.down("xs")]: {
+            display:'block',
+            margin: 0,
+            top: 'auto',
+            right: 30,
+            bottom: 30,
+            left: 'auto',
+            position: 'fixed'
+        }
+    },
+    filter:{
+        display:'block',
+        [theme.breakpoints.down("xs")]: {
+            display:'none',
+        }
+    },
+    paper:{
+        padding: theme.spacing(2)
+    },
+    currency:{
+        maxWidth:'50px'
+    }
 }))
 
 export default function Houses(){
@@ -69,11 +120,21 @@ export default function Houses(){
     const currencyStore = useSelector(state => state.CurrencyStore)
     const unitStore = useSelector(state => state.UnitStore)
     const [expanded, setExpanded] = useState({});
+    const [openSidePanel, setOpenSidePanel] = useState(false)
+    const [openImage, setOpenImage] = useState(false)
+    const [image, setImage] = useState("")
     const classes = useStyles();
     const dispatch = useDispatch()
 
     const [hasMore, setHasMore] = useState(true)
     const [houses, setHouses] = useState([])
+
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setOpenSidePanel(open);
+    }
 
     const fetchCountHouses = () => {
         dispatch(clearError())
@@ -293,7 +354,7 @@ export default function Houses(){
         let options = {
             year: 'numeric', month: 'numeric', day: 'numeric',
         };
-        return date.toLocaleDateString('eu', options);
+        return date.toLocaleDateString('ru', options);
     }
 
     const handleExpandClick = (id) => {
@@ -333,188 +394,192 @@ export default function Houses(){
     return(
         <div>
             <Grid container spacing={3}>
-                <Grid item xs={12} sm={4} md={4}>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id="type">Тип</InputLabel>
-                        <Select
-                            labelId="type"
-                            id="type"
-                            value={houseStore.typeFilter}
-                            onChange={handleChangeType}
-                        >
-                            {
-                                typeStore.types.map(type => {
-                                    return <MenuItem value={type.id}>
-                                        {type.name}
-                                    </MenuItem>
-                                })
-                            }
-                        </Select>
-                    </FormControl>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id="country">Страна</InputLabel>
-                        <Select
-                            labelId="country"
-                            id="country"
-                            value={houseStore.countryFilter}
-                            onChange={handleChangeCountry}
-                        >
-                            {
-                                countryStore.countries.map(country => {
-                                    return <MenuItem value={country.id}>
-                                        {country.name}
-                                    </MenuItem>
-                                })
-                            }
-                        </Select>
-                    </FormControl>
-                    {
-                        cityStore.cities.length > 0 ? (
-                            <FormControl className={classes.formControl}>
-                                <InputLabel id="city">Город</InputLabel>
-                                <Select
-                                    labelId="city"
-                                    id="city"
-                                    value={houseStore.cityFilter}
-                                    onChange={handleChangeCity}
-                                >
-                                    {
-                                        cityStore.cities.map(city => {
-                                            return <MenuItem value={city.id}>
-                                                {city.name}
-                                            </MenuItem>
-                                        })
-                                    }
-                                </Select>
-                            </FormControl>
-                        ): ''
-                    }
-                    <FormControl component="fieldset">
-                        <FormLabel component="legend">Комнат</FormLabel>
-                        <RadioGroup aria-label="rooms" name="rooms" value={houseStore.rooms} onChange={handleChangeRooms} style={{display:'flex', flexDirection:'row'}}>
-                            <FormControlLabel value={"1"} control={<Radio />} label="1" />
-                            <FormControlLabel value={"2"} control={<Radio />} label="2" />
-                            <FormControlLabel value={"3"} control={<Radio />} label="3" />
-                            <FormControlLabel value={"4"} control={<Radio />} label="4+" />
-                        </RadioGroup>
-                    </FormControl>
-                    <div>
-                        <Typography variant="h6">Этажей</Typography>
-                        <TextField
-                            id="floorsFrom"
-                            label={'от'}
-                            type='number'
-                            inputProps={{'min': 1, 'max': 50}}
-                            value={houseStore.floorsFrom}
-                            onChange={handleFloorsFromChange}
-                        />
-                        <TextField
-                            id="floorsTo"
-                            label={'до'}
-                            type='number'
-                            inputProps={{'min': 1, 'max': 50}}
-                            value={houseStore.floorsTo}
-                            onChange={handleFloorsToChange}
-                            style={{marginLeft:'20px'}}
-                        />
-                    </div>
-                    <div>
-                        <Typography variant="h6">Площадь помещений, м<sup>2</sup></Typography>
-                        <TextField
-                            id="areaFrom"
-                            label={'от'}
-                            type='number'
-                            inputProps={{'min': 1, 'max': 50}}
-                            value={houseStore.areaFrom}
-                            onChange={handleAreaFromChange}
-                        />
-                        <TextField
-                            id="areaTo"
-                            label={'до'}
-                            type='number'
-                            inputProps={{'min': 1, 'max': 50}}
-                            value={houseStore.areaTo}
-                            onChange={handleAreaToChange}
-                            style={{marginLeft:'20px'}}
-                        />
-                    </div>
-                    <div>
-                        <Typography variant="h6">Площадь участка</Typography>
-                        <TextField
-                            id="landAreaFrom"
-                            label={'от'}
-                            type='number'
-                            inputProps={{'min': 1}}
-                            value={houseStore.landAreaFrom}
-                            onChange={handleChangeLandAreaFrom}
-                            style={{maxWidth:'80px'}}
-                        />
-                        <TextField
-                            id="landAreaTo"
-                            label={'до'}
-                            type='number'
-                            inputProps={{'min': 1}}
-                            value={houseStore.landAreaTo}
-                            onChange={handleChangeLandAreaTo}
-                            style={{marginLeft:'20px', maxWidth:'80px'}}
-                        />
-                    </div>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id="unit">Единица измерения</InputLabel>
-                        <Select
-                            labelId="unit"
-                            id="unit"
-                            value={houseStore.unit}
-                            onChange={handleChangeUnit}
-                        >
-                            {
-                                unitStore.units.map(unit => {
-                                    return <MenuItem value={unit.id}>
-                                        {unit.name}
-                                    </MenuItem>
-                                })
-                            }
-                        </Select>
-                    </FormControl>
-                    <div>
-                        <Typography variant="h6">Цена</Typography>
-                        <TextField
-                            id="priceFrom"
-                            label={'от'}
-                            value={houseStore.priceFrom}
-                            onChange={handlePriceFromChange}
-                            style={{maxWidth:'80px'}}
-                        />
-                        <TextField
-                            id="priceTo"
-                            label={'до'}
-                            value={houseStore.priceTo}
-                            onChange={handlePriceToChange}
-                            style={{marginLeft:'20px', maxWidth:'80px'}}
-                        />
+                <Grid item xs={12} sm={4} md={4} className={classes.filter}>
+                    <Paper elevation={2} className={classes.paper}>
                         <FormControl className={classes.formControl}>
-                            <InputLabel id="currency">Валюта</InputLabel>
+                            <InputLabel id="type">Тип</InputLabel>
                             <Select
-                                labelId="currency"
-                                id="currency"
-                                value={houseStore.currency}
-                                onChange={handleChangeCurrency}
+                                labelId="type"
+                                id="type"
+                                value={houseStore.typeFilter}
+                                onChange={handleChangeType}
                             >
                                 {
-                                    currencyStore.currencies.map(currency => {
-                                        return <MenuItem value={currency.id}>
-                                            {currency.name}
+                                    typeStore.types.map(type => {
+                                        return <MenuItem value={type.id}>
+                                            {type.name}
                                         </MenuItem>
                                     })
                                 }
                             </Select>
                         </FormControl>
-                    </div>
-                    <Button variant="contained"
-                            color="primary"
-                            onClick={handleSearch}>
-                        Поиск
-                    </Button>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="country">Страна</InputLabel>
+                            <Select
+                                labelId="country"
+                                id="country"
+                                value={houseStore.countryFilter}
+                                onChange={handleChangeCountry}
+                            >
+                                {
+                                    countryStore.countries.map(country => {
+                                        return <MenuItem value={country.id}>
+                                            {country.name}
+                                        </MenuItem>
+                                    })
+                                }
+                            </Select>
+                        </FormControl>
+                        {
+                            cityStore.cities.length > 0 ? (
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel id="city">Город</InputLabel>
+                                    <Select
+                                        labelId="city"
+                                        id="city"
+                                        value={houseStore.cityFilter}
+                                        onChange={handleChangeCity}
+                                    >
+                                        {
+                                            cityStore.cities.map(city => {
+                                                return <MenuItem value={city.id}>
+                                                    {city.name}
+                                                </MenuItem>
+                                            })
+                                        }
+                                    </Select>
+                                </FormControl>
+                            ): ''
+                        }
+                        <FormControl component="fieldset">
+                            <FormLabel component="legend">Комнат</FormLabel>
+                            <RadioGroup aria-label="rooms" name="rooms" value={houseStore.rooms} onChange={handleChangeRooms} style={{display:'flex', flexDirection:'row'}}>
+                                <FormControlLabel value={"1"} control={<Radio />} label="1" />
+                                <FormControlLabel value={"2"} control={<Radio />} label="2" />
+                                <FormControlLabel value={"3"} control={<Radio />} label="3" />
+                                <FormControlLabel value={"4"} control={<Radio />} label="4+" />
+                            </RadioGroup>
+                        </FormControl>
+                        <div>
+                            <Typography variant="h6">Этажей</Typography>
+                            <TextField
+                                id="floorsFrom"
+                                label={'от'}
+                                type='number'
+                                inputProps={{'min': 1, 'max': 50}}
+                                value={houseStore.floorsFrom}
+                                onChange={handleFloorsFromChange}
+                            />
+                            <TextField
+                                id="floorsTo"
+                                label={'до'}
+                                type='number'
+                                inputProps={{'min': 1, 'max': 50}}
+                                value={houseStore.floorsTo}
+                                onChange={handleFloorsToChange}
+                                style={{marginLeft:'20px'}}
+                            />
+                        </div>
+                        <div>
+                            <Typography variant="h6">Площадь помещений, м<sup>2</sup></Typography>
+                            <TextField
+                                id="areaFrom"
+                                label={'от'}
+                                type='number'
+                                inputProps={{'min': 1, 'max': 50}}
+                                value={houseStore.areaFrom}
+                                onChange={handleAreaFromChange}
+                            />
+                            <TextField
+                                id="areaTo"
+                                label={'до'}
+                                type='number'
+                                inputProps={{'min': 1, 'max': 50}}
+                                value={houseStore.areaTo}
+                                onChange={handleAreaToChange}
+                                style={{marginLeft:'20px'}}
+                            />
+                        </div>
+                        <div>
+                            <Typography variant="h6">Площадь участка</Typography>
+                            <TextField
+                                id="landAreaFrom"
+                                label={'от'}
+                                type='number'
+                                inputProps={{'min': 1}}
+                                value={houseStore.landAreaFrom}
+                                onChange={handleChangeLandAreaFrom}
+                                style={{maxWidth:'70px'}}
+                            />
+                            <TextField
+                                id="landAreaTo"
+                                label={'до'}
+                                type='number'
+                                inputProps={{'min': 1}}
+                                value={houseStore.landAreaTo}
+                                onChange={handleChangeLandAreaTo}
+                                style={{marginLeft:'20px', maxWidth:'70px'}}
+                            />
+                        </div>
+                        <FormControl style={{minWidth:'70px'}}>
+                            <InputLabel id="unit">Единица измерения</InputLabel>
+                            <Select
+                                labelId="unit"
+                                id="unit"
+                                value={houseStore.unit}
+                                onChange={handleChangeUnit}
+                            >
+                                {
+                                    unitStore.units.map(unit => {
+                                        return <MenuItem value={unit.id}>
+                                            {unit.name}
+                                        </MenuItem>
+                                    })
+                                }
+                            </Select>
+                        </FormControl>
+                        <div>
+                            <Typography variant="h6">Цена</Typography>
+                            <TextField
+                                id="priceFrom"
+                                label={'от'}
+                                value={houseStore.priceFrom}
+                                onChange={handlePriceFromChange}
+                                style={{maxWidth:'70px'}}
+                            />
+                            <TextField
+                                id="priceTo"
+                                label={'до'}
+                                value={houseStore.priceTo}
+                                onChange={handlePriceToChange}
+                                style={{marginLeft:'20px', maxWidth:'70px'}}
+                            />
+                            <FormControl style={{marginLeft:'5px'}}
+                                        className={classes.currency}>
+                                <InputLabel id="currency">Валюта</InputLabel>
+                                <Select
+                                    labelId="currency"
+                                    id="currency"
+                                    value={houseStore.currency}
+                                    onChange={handleChangeCurrency}
+                                >
+                                    {
+                                        currencyStore.currencies.map(currency => {
+                                            return <MenuItem value={currency.id}>
+                                                {currency.name}
+                                            </MenuItem>
+                                        })
+                                    }
+                                </Select>
+                            </FormControl>
+                        </div>
+                        <Button variant="contained"
+                                color="primary"
+                                style={{marginTop:'10px'}}
+                                onClick={handleSearch}>
+                            Поиск
+                        </Button>
+                    </Paper>
                 </Grid>
                 <Grid item xs={12} sm={8} md={8}>
                     <InfiniteScroll
@@ -525,7 +590,7 @@ export default function Houses(){
                                 <b>Это все!</b>
                             </p>
                         }
-                        loader={ <p style={{ textAlign: 'center' }}>
+                        loader={ <p className={classes.loader}>
                             <CircularProgress/>
                         </p>
                         }
@@ -535,11 +600,23 @@ export default function Houses(){
                                 return   <Card>
                                         <CardHeader
                                             title={house.title}
-                                            subheader={parseDate(house.created_at)}/>
+                                            subheader={
+                                                <div style={{display:'flex', flexDirection:'row'}}>
+                                                    <AccessTimeIcon className={classes.icon}/>
+                                                    <h6 className={classes.h6}>{parseDate(house.created_at)}</h6>
+                                                </div>
+                                            }>
+                                        </CardHeader>
                                         <CardMedia
                                             className={classes.media}
                                             image={house.image}
                                             title="house"
+                                            style={{cursor: 'pointer'}}
+                                            onClick={ () => {
+                                                setOpenImage(true)
+                                                setImage(house.image)
+                                            }
+                                            }
                                         />
                                         <CardContent>
                                             <Typography variant="body1" color="textSecondary"
@@ -610,6 +687,207 @@ export default function Houses(){
                     </InfiniteScroll>
                 </Grid>
             </Grid>
+            <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => {
+                setOpenSidePanel(true)}
+            }>
+                <SearchIcon/>
+            </Fab>
+            <Drawer
+                open={openSidePanel}
+                onClose={toggleDrawer(false)}>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="type">Тип</InputLabel>
+                    <Select
+                        labelId="type"
+                        id="type"
+                        value={houseStore.typeFilter}
+                        onChange={handleChangeType}
+                    >
+                        {
+                            typeStore.types.map(type => {
+                                return <MenuItem value={type.id}>
+                                    {type.name}
+                                </MenuItem>
+                            })
+                        }
+                    </Select>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="country">Страна</InputLabel>
+                    <Select
+                        labelId="country"
+                        id="country"
+                        value={houseStore.countryFilter}
+                        onChange={handleChangeCountry}
+                    >
+                        {
+                            countryStore.countries.map(country => {
+                                return <MenuItem value={country.id}>
+                                    {country.name}
+                                </MenuItem>
+                            })
+                        }
+                    </Select>
+                </FormControl>
+                {
+                    cityStore.cities.length > 0 ? (
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="city">Город</InputLabel>
+                            <Select
+                                labelId="city"
+                                id="city"
+                                value={houseStore.cityFilter}
+                                onChange={handleChangeCity}
+                            >
+                                {
+                                    cityStore.cities.map(city => {
+                                        return <MenuItem value={city.id}>
+                                            {city.name}
+                                        </MenuItem>
+                                    })
+                                }
+                            </Select>
+                        </FormControl>
+                    ): ''
+                }
+                <FormControl component="fieldset">
+                    <FormLabel component="legend">Комнат</FormLabel>
+                    <RadioGroup aria-label="rooms" name="rooms" value={houseStore.rooms} onChange={handleChangeRooms} style={{display:'flex', flexDirection:'row'}}>
+                        <FormControlLabel value={"1"} control={<Radio />} label="1" />
+                        <FormControlLabel value={"2"} control={<Radio />} label="2" />
+                        <FormControlLabel value={"3"} control={<Radio />} label="3" />
+                        <FormControlLabel value={"4"} control={<Radio />} label="4+" />
+                    </RadioGroup>
+                </FormControl>
+                <div>
+                    <Typography variant="h6">Этажей</Typography>
+                    <TextField
+                        id="floorsFrom"
+                        label={'от'}
+                        type='number'
+                        inputProps={{'min': 1, 'max': 50}}
+                        value={houseStore.floorsFrom}
+                        onChange={handleFloorsFromChange}
+                    />
+                    <TextField
+                        id="floorsTo"
+                        label={'до'}
+                        type='number'
+                        inputProps={{'min': 1, 'max': 50}}
+                        value={houseStore.floorsTo}
+                        onChange={handleFloorsToChange}
+                        style={{marginLeft:'20px'}}
+                    />
+                </div>
+                <div>
+                    <Typography variant="h6">Площадь помещений, м<sup>2</sup></Typography>
+                    <TextField
+                        id="areaFrom"
+                        label={'от'}
+                        type='number'
+                        inputProps={{'min': 1, 'max': 50}}
+                        value={houseStore.areaFrom}
+                        onChange={handleAreaFromChange}
+                    />
+                    <TextField
+                        id="areaTo"
+                        label={'до'}
+                        type='number'
+                        inputProps={{'min': 1, 'max': 50}}
+                        value={houseStore.areaTo}
+                        onChange={handleAreaToChange}
+                        style={{marginLeft:'20px'}}
+                    />
+                </div>
+                <div>
+                    <Typography variant="h6">Площадь участка</Typography>
+                    <TextField
+                        id="landAreaFrom"
+                        label={'от'}
+                        type='number'
+                        inputProps={{'min': 1}}
+                        value={houseStore.landAreaFrom}
+                        onChange={handleChangeLandAreaFrom}
+                        style={{maxWidth:'70px'}}
+                    />
+                    <TextField
+                        id="landAreaTo"
+                        label={'до'}
+                        type='number'
+                        inputProps={{'min': 1}}
+                        value={houseStore.landAreaTo}
+                        onChange={handleChangeLandAreaTo}
+                        style={{marginLeft:'20px', maxWidth:'70px'}}
+                    />
+                </div>
+                <FormControl className={classes.currency}>
+                    <InputLabel id="unit">Единица измерения</InputLabel>
+                    <Select
+                        labelId="unit"
+                        id="unit"
+                        value={houseStore.unit}
+                        onChange={handleChangeUnit}
+                    >
+                        {
+                            unitStore.units.map(unit => {
+                                return <MenuItem value={unit.id}>
+                                    {unit.name}
+                                </MenuItem>
+                            })
+                        }
+                    </Select>
+                </FormControl>
+                <div>
+                    <Typography variant="h6">Цена</Typography>
+                    <TextField
+                        id="priceFrom"
+                        label={'от'}
+                        value={houseStore.priceFrom}
+                        onChange={handlePriceFromChange}
+                        style={{maxWidth:'70px'}}
+                    />
+                    <TextField
+                        id="priceTo"
+                        label={'до'}
+                        value={houseStore.priceTo}
+                        onChange={handlePriceToChange}
+                        style={{marginLeft:'20px', maxWidth:'70px'}}
+                    />
+                    <FormControl style={{marginLeft:'5px'}}
+                                className={classes.currency}>
+                        <InputLabel id="currency">Валюта</InputLabel>
+                        <Select
+                            labelId="currency"
+                            id="currency"
+                            value={houseStore.currency}
+                            onChange={handleChangeCurrency}
+                        >
+                            {
+                                currencyStore.currencies.map(currency => {
+                                    return <MenuItem value={currency.id}>
+                                        {currency.name}
+                                    </MenuItem>
+                                })
+                            }
+                        </Select>
+                    </FormControl>
+                </div>
+                <Button variant="contained"
+                        color="primary"
+                        style={{marginTop:'10px'}}
+                        onClick={() => {
+                            handleSearch()
+                            setOpenSidePanel(false)
+                        }
+                        }>
+                    Поиск
+                </Button>
+            </Drawer>
+            {
+                openImage && (
+                    <Lightbox mainSrc={image} onCloseRequest={() => setOpenImage(false)}/>
+                )
+            }
         </div>
     )
 }

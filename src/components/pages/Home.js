@@ -29,9 +29,6 @@ const useStyles = makeStyles((theme) => ({
         color:'grey',
         width:'20px',
         height:'20px',
-    },
-    price:{
-
     }
 }));
 
@@ -150,6 +147,7 @@ export default function Home(){
                                         </div>
                                         <Card.Img variant="top"
                                                   src={apartment.image}
+                                                  style={{cursor: 'pointer'}}
                                                   onClick={ () => {
                                                       setOpenImage(true)
                                                       setImage(apartment.image)
@@ -189,7 +187,8 @@ export default function Home(){
                                             <h6 className={classes.h6}>{parseDate(house.created_at)}</h6>
                                         </div>
                                         <Card.Img variant="top"
-                                                  src = {house.image}
+                                                  src={house.image}
+                                                  style={{cursor: 'pointer'}}
                                                   onClick={ () => {
                                                           setOpenImage(true)
                                                           setImage(house.image)

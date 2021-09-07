@@ -18,7 +18,10 @@ const useStyles = makeStyles((theme) => ({
     navlink:{
         marginLeft: '20px',
         color:"white",
-        textDecoration:"none"
+        textDecoration:"none",
+        '&:hover': {
+            color:'black'
+        }
     }
 }))
 

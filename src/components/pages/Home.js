@@ -1,9 +1,12 @@
 import React,{useState,useEffect} from 'react'
-import house from '../images/house.jpg'
+import houseImg from '../images/house.jpg'
 import {Container, Row, Col, Card, Button} from "react-bootstrap";
 import {useSelector} from "react-redux";
 import {Backdrop, CardContent, Fade, Modal, Paper, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import Lightbox from "react-image-lightbox";
+import "react-image-lightbox/style.css";
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -17,6 +20,19 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
     },
+    h6:{
+        marginLeft:'5px',
+        color:'grey',
+        fontWeight:'normal'
+    },
+    icon:{
+        color:'grey',
+        width:'20px',
+        height:'20px',
+    },
+    price:{
+
+    }
 }));
 
 export default function Home(){
@@ -25,17 +41,12 @@ export default function Home(){
     const [houses, setHouses] = useState([]);
 
     const classes = useStyles();
-    const [openModal, setOpenModal] = useState(false);
-    const [descriptionApart, setDescriptionApart] = useState("")
-    const [typeApart, setTypeApart] = useState("")
-    const [roomsApart, setRoomsApart] = useState("")
-    const [floorsApart, setFloorsApart] = useState("")
-    const [floorApart, setFloorApart] = useState("")
-    const [areaApart, setAreaApart] = useState("")
-    const [residential_areaApart, setResidential_areaApart] = useState("")
-    const [kitchen_areaApart, setKitchen_areaApart] = useState("")
-    const [nameApart, setNameApart] = useState("")
-    const [phoneApart, setPhoneApart] = useState("")
+    const [openModalApart, setOpenModalApart] = useState(false);
+    const [openModalHouse, setOpenModalHouse] = useState(false);
+    const [apartment, setApartment] = useState(null)
+    const [house, setHouse] = useState(null)
+    const [image, setImage] = useState("")
+    const [openImage, setOpenImage] = useState(false)
 
     const fetchLastFourApartments = () => {
         fetch(`${commonStore.basename}/apartment/last`
@@ -75,34 +86,42 @@ export default function Home(){
         })
     }
 
-    const handleCloseModal = () => {
-        setOpenModal(false)
+    const handleCloseModalApart = () => {
+        setOpenModalApart(false)
     }
 
-    const handleOpenApartment = (e, id) => {
-        setOpenModal(true)
-        setDescriptionApart(apartments.find(apart => id === apart.id).description)
-        setTypeApart(apartments.find(apart => id === apart.id).type[0].name)
-        setRoomsApart(apartments.find(apart => id === apart.id).rooms)
-        setFloorsApart(apartments.find(apart => id === apart.id).floors)
-        setFloorApart(apartments.find(apart => id === apart.id).floor)
-        setAreaApart(apartments.find(apart => id === apart.id).area)
-        setResidential_areaApart(apartments.find(apart => id === apart.id).residential_area)
-        setKitchen_areaApart(apartments.find(apart => id === apart.id).kitchen_area)
-        setNameApart(apartments.find(apart => id === apart.id).name)
-        setPhoneApart(apartments.find(apart => id === apart.id).phone)
+    const handleOpenApartment = (e, apartment) => {
+        setOpenModalApart(true)
+        setApartment(apartment)
+    }
+
+    const handleCloseModalHouse = (e) => {
+        setOpenModalHouse(false)
+    }
+
+    const handleOpenHouse = (e, house) => {
+        setOpenModalHouse(true)
+        setHouse(house)
+    }
+
+    const parseDate = (ms) => {
+        let date = new Date(ms);
+        let options = {
+            year: 'numeric', month: 'numeric', day: 'numeric',
+        };
+        return date.toLocaleDateString('ru', options);
     }
 
     useEffect(() => {
-        fetchLastFourHouses()
         fetchLastFourApartments();
+        fetchLastFourHouses()
     }, []);
 
     return(
         <>
             <Container style = {{marginTop:'20px',
                 backgroundSize: 'cover',
-                backgroundImage: `url(${house})`,
+                backgroundImage: `url(${houseImg})`,
                 color:'white',
                 paddingTop:'30px',
                 paddingBottom:'30px',
@@ -125,16 +144,28 @@ export default function Home(){
                             return(
                                 <Col>
                                     <Card style = {{minWidth :'17rem' , marginTop:'10px'}}>
-                                        <Card.Img variant="top" src = {apartment.image}/>
+                                        <div style={{display:'flex', flexDirection:'row'}}>
+                                            <AccessTimeIcon className={classes.icon}/>
+                                            <h6 className={classes.h6}>{parseDate(apartment.created_at)}</h6>
+                                        </div>
+                                        <Card.Img variant="top"
+                                                  src={apartment.image}
+                                                  onClick={ () => {
+                                                      setOpenImage(true)
+                                                      setImage(apartment.image)
+                                                    }
+                                                  }
+                                        />
                                         <Card.Body>
-                                            <Card.Title>{apartment.type[0].name}</Card.Title>
-                                            <ul class="list-group list-group-flush">
-                                                <li class="list-group-item">{apartment.price} {apartment.currency[0].name}.</li>
-                                                <li class="list-group-item">{apartment.rooms} комната, {apartment.area} м<sup>2</sup> </li>
-                                                <li class="list-group-item">{apartment.floor}/{apartment.floors} этаж</li>
+                                            <Card.Title style={{marginLeft:'17px'}}>{apartment.type[0].name}</Card.Title>
+                                            <ul className="list-group list-group-flush">
+                                                <li className="list-group-item" style={{fontSize:'20px', fontWeight: 'bold', color:'green'}}>{apartment.price} {apartment.currency[0].name}</li>
+                                                <li className="list-group-item">Комнат - {apartment.rooms}, {apartment.area} м<sup>2</sup> </li>
+                                                <li className="list-group-item">{apartment.floor}/{apartment.floors} этаж</li>
                                             </ul>
-                                            <Button variants ="primary"
-                                                    onClick={(e) => handleOpenApartment(e, apartment.id)}>
+                                            <Button style={{marginLeft:'15px'}}
+                                                    variants ="primary"
+                                                    onClick={(e) => handleOpenApartment(e, apartment)}>
                                                 Детально
                                             </Button>
                                         </Card.Body>
@@ -153,15 +184,30 @@ export default function Home(){
                             return(
                                 <Col>
                                     <Card style = {{minWidth :'17rem' , marginTop:'10px'}}>
-                                        <Card.Img variant="top" src = {house.image}/>
+                                        <div style={{display:'flex', flexDirection:'row'}}>
+                                            <AccessTimeIcon className={classes.icon}/>
+                                            <h6 className={classes.h6}>{parseDate(house.created_at)}</h6>
+                                        </div>
+                                        <Card.Img variant="top"
+                                                  src = {house.image}
+                                                  onClick={ () => {
+                                                          setOpenImage(true)
+                                                          setImage(house.image)
+                                                      }
+                                                  }
+                                        />
                                         <Card.Body>
-                                            <Card.Title>{house.type[0].name}</Card.Title>
+                                            <Card.Title style={{marginLeft:'16px'}}>{house.type[0].name}</Card.Title>
                                             <ul class="list-group list-group-flush">
-                                                <li class="list-group-item">{house.price} {house.currency[0].name}</li>
-                                                <li class="list-group-item">{house.rooms} комната, {house.area} м<sup>2</sup>, {house.land_area} {house.unit[0].title} </li>
-                                                <li class="list-group-item">{house.floors} этаж</li>
+                                                <li class="list-group-item" style={{fontSize:'20px', fontWeight: 'bold', color:'green'}}>{house.price} {house.currency[0].name}</li>
+                                                <li class="list-group-item">Комнат - {house.rooms}, {house.area} м<sup>2</sup>, {house.land_area} {house.unit[0].title} </li>
+                                                <li class="list-group-item">Этажность - {house.floors}</li>
                                             </ul>
-                                            <Button variants ="primary">Детально</Button>
+                                            <Button variants ="primary"
+                                                    style={{marginLeft:'15px'}}
+                                                    onClick={(e) => handleOpenHouse(e, house)}>
+                                                Детально
+                                            </Button>
                                         </Card.Body>
                                     </Card>
                                 </Col>
@@ -169,52 +215,114 @@ export default function Home(){
                         })
                     }
                 </Row>
+                {
+                    openImage && (
+                        <Lightbox mainSrc={image} onCloseRequest={() => setOpenImage(false)}/>
+                    )
+                }
             </Container>
             <Modal
                 aria-labelledby="transition-modal-title"
                 aria-describedby="transition-modal-description"
                 className={classes.modal}
-                open={openModal}
-                onClose={handleCloseModal}
+                open={openModalApart}
+                onClose={handleCloseModalApart}
                 closeAfterTransition
                 BackdropComponent={Backdrop}
                 BackdropProps={{
                     timeout: 500,
                 }}
             >
-                <Fade in={openModal}>
+                <Fade in={openModalApart}>
                     <div className={classes.paper}>
-                        <Typography paragraph variant="h5" gutterBottom>
-                            {typeApart}
-                        </Typography>
-                        <Typography paragraph>
-                            Комнат
-                            - {roomsApart} &#8226; {floorApart} этаж
-                            из {floorsApart}
-                        </Typography>
-                        <Typography paragraph>
-                            Площадь {areaApart} {(residential_areaApart ? ` - ${residential_areaApart}` : "")} {(kitchen_areaApart ? ` - ${kitchen_areaApart}` : "")} м<sup>2</sup>
-                        </Typography>
-                        <Typography paragraph color="textSecondary">
-                            Описание
-                        </Typography>
-                        <Typography paragraph
-                                    style={{wordWrap: "break-word"}}>
-                            {descriptionApart}
-                        </Typography>
-                        <Paper className={classes.paper}
-                               style={{backgroundColor: 'lightgrey'}}>
-                            <Typography paragraph variant="h6"
-                                        gutterBottom>
-                                Связаться с {nameApart}
-                            </Typography>
-                            <Typography variant="h6">
-                                <a style={{textDecoration: 'none'}}
-                                   href={"tel:" + phoneApart}>
-                                    {phoneApart}
-                                </a>
-                            </Typography>
-                        </Paper>
+                        {
+                            (apartment!== null) ? (
+                                <div>
+                                    <Typography paragraph variant="h5" gutterBottom>
+                                        {apartment.type[0].name}
+                                    </Typography>
+                                    <Typography paragraph>
+                                        Комнат - {apartment.rooms} &#8226; {apartment.floor} этаж из {apartment.floors}
+                                    </Typography>
+                                    <Typography paragraph>
+                                        Площадь {apartment.area} {(apartment.residential_area ? ` - ${apartment.residential_area}` : "")} {(apartment.kitchen_area ? ` - ${apartment.kitchen_area}` : "")} м<sup>2</sup>
+                                    </Typography>
+                                    <Typography paragraph color="textSecondary">
+                                        Описание
+                                    </Typography>
+                                    <Typography paragraph
+                                                style={{wordWrap: "break-word"}}>
+                                            {apartment.description}
+                                    </Typography>
+                                    <Paper className={classes.paper}
+                                            style={{backgroundColor: 'lightgrey'}}>
+                                        <Typography paragraph
+                                                    variant="h6"
+                                                    gutterBottom>
+                                            Связаться с {apartment.name}
+                                        </Typography>
+                                        <Typography variant="h6">
+                                            <a style={{textDecoration: 'none'}}
+                                               href={"tel:" + apartment.phone}>
+                                                {apartment.phone}
+                                            </a>
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ):''
+                        }
+                    </div>
+                </Fade>
+            </Modal>
+            <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                className={classes.modal}
+                open={openModalHouse}
+                onClose={handleCloseModalHouse}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                    timeout: 500,
+                }}
+            >
+                <Fade in={openModalHouse}>
+                    <div className={classes.paper}>
+                        {
+                            (house!== null) ? (
+                                <div>
+                                    <Typography paragraph>
+                                        Комнат - {house.rooms} &#8226; {house.floors} этаж
+                                    </Typography>
+                                    <Typography paragraph>
+                                        Площадь {house.area} {(house.residential_area ? ` - ${house.residential_area} ` : "")} {(house.kitchen_area ? ` - ${house.kitchen_area}` : "")} м<sup>2</sup>
+                                    </Typography>
+                                    <Typography paragraph>
+                                        {house.land_area} {house.unit[0].name}
+                                    </Typography>
+                                    <Typography paragraph color="textSecondary">
+                                        Описание
+                                    </Typography>
+                                    <Typography paragraph
+                                                style={{wordWrap: "break-word"}}>
+                                        {house.description}
+                                    </Typography>
+                                    <Paper className={classes.paper}
+                                           style={{backgroundColor: 'lightgrey'}}>
+                                        <Typography paragraph variant="h6"
+                                                    gutterBottom>
+                                            Связаться с {house.name}
+                                        </Typography>
+                                        <Typography variant="h6">
+                                            <a style={{textDecoration: 'none'}}
+                                               href={"tel:" + house.phone}>
+                                                {house.phone}
+                                            </a>
+                                        </Typography>
+                                    </Paper>
+                                </div>
+                            ):''
+                        }
                     </div>
                 </Fade>
             </Modal>

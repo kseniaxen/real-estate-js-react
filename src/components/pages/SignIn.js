@@ -143,7 +143,7 @@ export default function SignIn(){
                         {
                             showUnauthError ? <Typography className={classes.error} >Login or password is wrong</Typography>: ''
                         }
-                        <Button variant="contained" color="primary" onClick={handleSubmit}>
+                        <Button variant="contained" color="primary" id="button" onClick={handleSubmit}>
                             Войти
                         </Button>
                     </Card.Body>

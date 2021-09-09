@@ -388,6 +388,7 @@ export default function Apartments(){
                         <FormControl className={classes.formControl}>
                             <InputLabel id="type">Тип</InputLabel>
                             <Select
+                                name="type"
                                 labelId="type"
                                 id="type"
                                 value={apartmentStore.typeFilter}
@@ -443,10 +444,10 @@ export default function Apartments(){
                         <FormControl component="fieldset">
                             <FormLabel component="legend">Комнат</FormLabel>
                             <RadioGroup aria-label="rooms" name="rooms" value={apartmentStore.rooms} onChange={handleChangeRooms} style={{display:'flex', flexDirection:'row'}}>
-                                <FormControlLabel value={"1"} control={<Radio />} label="1" />
-                                <FormControlLabel value={"2"} control={<Radio />} label="2" />
-                                <FormControlLabel value={"3"} control={<Radio />} label="3" />
-                                <FormControlLabel value={"4"} control={<Radio />} label="4+" />
+                                <FormControlLabel value={"1"} control={<Radio />} label="1" id="room1" />
+                                <FormControlLabel value={"2"} control={<Radio />} label="2" id="room2" />
+                                <FormControlLabel value={"3"} control={<Radio />} label="3" id="room3" />
+                                <FormControlLabel value={"4"} control={<Radio />} label="4+" id="room4" />
                             </RadioGroup>
                         </FormControl>
                         <div>
@@ -547,6 +548,7 @@ export default function Apartments(){
                         <Button variant="contained"
                                 color="primary"
                                 style={{marginTop:'10px'}}
+                                id="search"
                                 onClick={handleSearch}>
                             Поиск
                         </Button>

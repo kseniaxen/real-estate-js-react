@@ -576,6 +576,7 @@ export default function Houses(){
                         <Button variant="contained"
                                 color="primary"
                                 style={{marginTop:'10px'}}
+                                id="search"
                                 onClick={handleSearch}>
                             Поиск
                         </Button>

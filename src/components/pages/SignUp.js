@@ -152,7 +152,7 @@ export default function SignUp(){
                                 </div>
                             </form>
                         </Card.Text>
-                        <Button variant="contained" color="primary" onClick={handleSubmit}>
+                        <Button variant="contained" color="primary" id="button" onClick={handleSubmit}>
                             Зарегистрироваться
                         </Button>
                     </Card.Body>

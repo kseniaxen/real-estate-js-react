@@ -140,7 +140,7 @@ export default function Home(){
                         apartments.map(apartment => {
                             return(
                                 <Col>
-                                    <Card style = {{minWidth :'17rem' , marginTop:'10px'}}>
+                                    <Card style = {{maxWidth :'17rem' , marginTop:'10px'}}>
                                         <div style={{display:'flex', flexDirection:'row'}}>
                                             <AccessTimeIcon className={classes.icon}/>
                                             <h6 className={classes.h6}>{parseDate(apartment.created_at)}</h6>
@@ -148,7 +148,7 @@ export default function Home(){
                                         <Card.Img
                                                   variant="top"
                                                   src={apartment.image}
-                                                  style={{cursor: 'pointer', maxHeight:'200px'}}
+                                                  style={{cursor: 'pointer', height:'200px'}}
                                                   onClick={ () => {
                                                       setOpenImage(true)
                                                       setImage(apartment.image)
@@ -182,14 +182,14 @@ export default function Home(){
                         houses.map(house => {
                             return(
                                 <Col>
-                                    <Card style = {{minWidth :'17rem' , marginTop:'10px'}}>
+                                    <Card style = {{maxWidth :'17rem' , marginTop:'10px'}}>
                                         <div style={{display:'flex', flexDirection:'row'}}>
                                             <AccessTimeIcon className={classes.icon}/>
                                             <h6 className={classes.h6}>{parseDate(house.created_at)}</h6>
                                         </div>
                                         <Card.Img variant="top"
                                                   src={house.image}
-                                                  style={{cursor: 'pointer', maxHeight:'200px'}}
+                                                  style={{cursor: 'pointer', height:'200px'}}
                                                   onClick={ () => {
                                                           setOpenImage(true)
                                                           setImage(house.image)
@@ -251,7 +251,7 @@ export default function Home(){
                                         Описание
                                     </Typography>
                                     <Typography paragraph
-                                                style={{wordWrap: "break-word"}}>
+                                                style={{wordWrap: "break-word", maxWidth:'300px'}}>
                                             {apartment.description}
                                     </Typography>
                                     <Paper className={classes.paper}
@@ -304,7 +304,7 @@ export default function Home(){
                                         Описание
                                     </Typography>
                                     <Typography paragraph
-                                                style={{wordWrap: "break-word"}}>
+                                                style={{wordWrap: "break-word", maxWidth:'300px'}}>
                                         {house.description}
                                     </Typography>
                                     <Paper className={classes.paper}

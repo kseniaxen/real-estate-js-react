@@ -63,7 +63,8 @@ export default function Navigation(){
                     userStore.user && (
                             <Button onClick={() => history.push('/user')}
                                     variant="contained"
-                                    color="secondary">
+                                    color="secondary"
+                                    id="personButton">
                                 <PersonIcon/> Личный кабинет
                             </Button>
                     )

@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import Home from "../components/pages/Home"
 import Apartments from "../components/pages/Apartments"
 import Houses from "../components/pages/Houses"
-import User_N from "../components/pages/User"
+import User from "../components/pages/User"
 import SignIn from "../components/pages/SignIn"
 import SignUp from "../components/pages/SignUp"
 import Dashboard from "../components/pages/admin/Dashboard";
@@ -19,7 +19,7 @@ export const loggedRoutes = [
     { path: '/', name: 'Главная', Component: Home },
     { path: '/apartment', name: 'Квартиры', Component: Apartments },
     { path: '/house', name: 'Дома', Component: Houses },
-    { path: '/user', name: 'Пользователь', Component: User_N },
+    { path: '/user', name: 'Пользователь', Component: User },
     { path: '/logout', name: 'Выйти', Component: Home }
 ]
 
@@ -28,6 +28,7 @@ export const adminRoutes = [
     { path: '/apartment', name: 'Квартиры', Component: Apartments },
     { path: '/house', name: 'Дома', Component: Houses },
     { path: '/admin', name: 'Панель управления', Component: Dashboard },
+    { path: '/user', name: 'Пользователь', Component: User },
     { path: '/logout', name: 'Выйти', Component: Home }
 ]
 

@@ -251,7 +251,7 @@ function App() {
                         routerStore.routes.map(({path, Component}) => {
                             return (
                                 <Route key={path} path={path} exact>
-                                    <Container>
+                                    <Container style={{minHeight:'750px'}}>
                                         {commonStore.loading ? <CircularProgress style={{ position: "fixed", top: "50%", left: "50%" }}/> : <Component/>}
                                     </Container>
                             </Route>

@@ -2,7 +2,7 @@ import React,{useState,useEffect} from 'react'
 import houseImg from '../images/house.jpg'
 import {Container, Row, Col, Card, Button} from "react-bootstrap";
 import {useSelector} from "react-redux";
-import {Backdrop, CardContent, Fade, Modal, Paper, Typography} from "@material-ui/core";
+import {Backdrop, CardContent, CardMedia, Fade, Modal, Paper, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import Lightbox from "react-image-lightbox";
@@ -29,7 +29,11 @@ const useStyles = makeStyles((theme) => ({
         color:'grey',
         width:'20px',
         height:'20px',
-    }
+    },
+    media: {
+        height: 0,
+        paddingTop: '56.25%', // 16:9
+    },
 }));
 
 export default function Home(){
@@ -135,25 +139,26 @@ export default function Home(){
             <Typography variant="h3">Последние объявления</Typography>
             <Container style={{paddingTop:'20px'}}>
                 <Typography variant="h5">Квартиры</Typography>
-                <Row >
+                <Row xs={1} sm={2} md={2} lg={4}>
                     {
                         apartments.map(apartment => {
                             return(
                                 <Col>
-                                    <Card style = {{maxWidth :'17rem' , marginTop:'10px'}}>
+                                    <Card style = {{marginTop:'10px'}}>
                                         <div style={{display:'flex', flexDirection:'row'}}>
                                             <AccessTimeIcon className={classes.icon}/>
                                             <h6 className={classes.h6}>{parseDate(apartment.created_at)}</h6>
                                         </div>
-                                        <Card.Img
-                                                  variant="top"
-                                                  src={apartment.image}
-                                                  style={{cursor: 'pointer', height:'200px'}}
-                                                  onClick={ () => {
-                                                      setOpenImage(true)
-                                                      setImage(apartment.image)
-                                                    }
-                                                  }
+                                        <CardMedia
+                                            className={classes.media}
+                                            image={apartment.image}
+                                            title="apartment"
+                                            style={{cursor: 'pointer'}}
+                                            onClick={ () => {
+                                                setOpenImage(true)
+                                                setImage(apartment.image)
+                                                }
+                                            }
                                         />
                                         <Card.Body>
                                             <Card.Title style={{marginLeft:'17px'}}>{apartment.type[0].name}</Card.Title>
@@ -177,24 +182,26 @@ export default function Home(){
             </Container>
             <Container style={{paddingTop:'20px'}}>
                 <Typography variant="h5">Дома</Typography>
-                <Row >
+                <Row xs={1} sm={2} md={2} lg={4}>
                     {
                         houses.map(house => {
                             return(
                                 <Col>
-                                    <Card style = {{maxWidth :'17rem' , marginTop:'10px'}}>
+                                    <Card style = {{marginTop:'10px'}}>
                                         <div style={{display:'flex', flexDirection:'row'}}>
                                             <AccessTimeIcon className={classes.icon}/>
                                             <h6 className={classes.h6}>{parseDate(house.created_at)}</h6>
                                         </div>
-                                        <Card.Img variant="top"
-                                                  src={house.image}
-                                                  style={{cursor: 'pointer', height:'200px'}}
-                                                  onClick={ () => {
-                                                          setOpenImage(true)
-                                                          setImage(house.image)
-                                                      }
-                                                  }
+                                        <CardMedia
+                                            className={classes.media}
+                                            image={house.image}
+                                            title="house"
+                                            style={{cursor: 'pointer'}}
+                                            onClick={ () => {
+                                                setOpenImage(true)
+                                                setImage(house.image)
+                                                }
+                                            }
                                         />
                                         <Card.Body>
                                             <Card.Title style={{marginLeft:'16px'}}>{house.type[0].name}</Card.Title>

@@ -17,6 +17,7 @@ import {setTypes} from "../stores/TypeStore";
 import {setTypeProperties} from "../stores/TypePropertyStore";
 import {setCurrencies} from "../stores/CurrencyStore";
 import {setUnits} from "../stores/UnitStore";
+import Footer from "./common/Footer";
 
 const theme = createTheme({
     palette: {
@@ -244,6 +245,7 @@ function App() {
         <ThemeProvider theme={theme}>
             <Router history={history}>
                 <Navigation/>
+                <div id="back-to-top-anchor"/>
                 <Switch>
                     {
                         routerStore.routes.map(({path, Component}) => {
@@ -257,6 +259,7 @@ function App() {
                         })
                     }
                 </Switch>
+                <Footer/>
             </Router>
         </ThemeProvider>
     );

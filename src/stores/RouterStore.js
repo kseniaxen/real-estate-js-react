@@ -34,7 +34,8 @@ export const adminRoutes = [
 const RouterStore = createSlice({
     name:'RouterStore',
     initialState:{
-        routes: anonymousRoutes
+        routes: anonymousRoutes,
+        navRoutes:anonymousRoutes
     },
     reducers:{
         setAnonymousRoutes:(state) =>{
